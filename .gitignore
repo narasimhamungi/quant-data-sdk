@@ -1,0 +1,20 @@
+# Secrets — never commit real credentials
+.env
+
+# SEC ticker cache — re-fetchable, not source
+.cache/
+
+# Logs — local debugging output, not source
+logs/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+PORTFOLIO_PACKAGING.md
