@@ -46,8 +46,9 @@ a real historical earnings restatement, real SEC filings for four
 companies with different fiscal calendars, real reconciled price
 history — never a synthetic fixture standing in for the real thing.
 Every bug found was traced to its actual mechanism before being fixed,
-and every fix was regression-checked against the previously-proven
-cases before moving on to the next thing.
+and after every fix the previously-proven cases were re-run by hand
+before moving on — manual re-verification, not an automated regression
+suite (see Known limitations).
 
 ## Key findings
 
