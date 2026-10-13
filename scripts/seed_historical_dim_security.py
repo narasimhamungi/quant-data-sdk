@@ -15,14 +15,14 @@ fix two tickers. This script inserts exactly one new row per named
 ticker and touches nothing else, by construction — no UPDATE statement
 exists anywhere in this file.
 
-Membership claim verified via search this session: AAPL was an
-established constituent by 1998, MSFT by 1999 (independent contemporary
-sources), comfortably covering the 2009-2010 window this unblocks.
+Membership claim, checked against independent contemporary sources: AAPL
+was an established constituent by 1998, MSFT by 1999, comfortably
+covering the 2009-2010 window this serves.
 Exact original addition dates were NOT verified and are not claimed.
 
 company_name / gics_sector / gics_sub_industry below are best-known
-standard GICS classifications — NOT independently verified this
-session, unlike the membership claim itself. figi is left NULL (no
+standard GICS classifications — NOT independently verified, unlike the
+membership claim itself. figi is left NULL (no
 OpenFIGI backfill attempted) — same handling build_dim_security already
 gives any row with a failed FIGI mapping.
 

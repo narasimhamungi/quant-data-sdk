@@ -79,11 +79,10 @@ def discover_annual_period(
     Find the most recent ANNUAL-duration FiscalPeriod known for
     (cik, concept) as of as_of, without the caller already knowing it.
 
-    Every FiscalPeriod used in this SDK so far (AAPL's FY2009, MSFT's
-    FY2009) was found by hand, via a one-off diagnostic query against
-    fundamental_fact — a pattern that doesn't scale past the first
-    couple of companies. This makes that discovery step part of the SDK
-    instead of a manual step outside it.
+    Finding a FiscalPeriod by hand (a diagnostic query against
+    fundamental_fact) doesn't scale past a couple of companies; this makes
+    that discovery step part of the SDK instead of a manual step outside
+    it.
 
     Deliberately does NOT use fundamentals_asof() — that function
     requires already knowing period_end, which is exactly what's being

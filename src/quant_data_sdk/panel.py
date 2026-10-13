@@ -7,9 +7,8 @@ get_panel_row_auto() are single-ticker convenience wrappers over it.
 Every period must be a FiscalPeriod (period_start + period_end) — see
 fundamentals.py for why period_end alone was ambiguous. get_panel_row()
 requires the caller to already know it; get_panel_row_auto() discovers
-it via fundamentals.discover_annual_period() instead — the latter is
-what actually removes the "diagnose this by hand first" bottleneck that
-every ticker used so far has gone through.
+it via fundamentals.discover_annual_period() instead, so no manual
+diagnosis is needed per ticker.
 """
 from __future__ import annotations
 
@@ -87,11 +86,9 @@ def get_panel_row_auto(ticker: str, as_of: datetime) -> PanelRow:
     Fully auto-discovering version of get_panel_row(): resolves CIK via
     the crosswalk, discovers the most recent annual fiscal period known
     as of as_of via discover_annual_period() (against net_income — an
-    arbitrary but reasonable anchor concept, since it's the one concept
-    confirmed present for every company ingested so far), then proceeds
+    anchor concept present for every company ingested), then proceeds
     exactly like get_panel_row(). No FiscalPeriod needs to be known in
-    advance — this is what actually removes the "diagnose it by hand
-    with psql first" step every ticker has needed until now.
+    advance.
     """
     cik = get_cik_for_ticker(ticker)
     period = discover_annual_period(cik, "net_income", as_of)

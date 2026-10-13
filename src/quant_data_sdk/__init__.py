@@ -1,6 +1,6 @@
 """quant-data-sdk — point-in-time-correct join layer over
 marketdata-lakehouse (prices) and pit-fundamentals-store (fundamentals).
 
-v0 scope: a single hardcoded security (AAPL), proving the cross-repo PIT
-join is correct before generalizing to get_panel(tickers=...).
+Entry points: get_panel(), get_panel_row() and get_panel_row_auto() in
+panel.py.
 """

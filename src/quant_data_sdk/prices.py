@@ -2,9 +2,8 @@
 Price lookup against marketdata-lakehouse's gold layer
 (fact_price_daily_consensus, dim_security, dim_date).
 
-CORRECTED from an earlier version that filtered dim_security by
-effective_from/effective_to to find "the security identity valid on
-as_of's date." That was based on a wrong theory of the schema.
+Why this does NOT filter dim_security by effective_from/effective_to to
+find "the security identity valid on as_of's date":
 build_fact_price_daily_consensus() (that repo's own loader) resolves
 security_key via `WHERE is_current` at the moment a price BATCH is
 ingested — not per the date each individual price row represents — and
@@ -15,20 +14,16 @@ ticker's entire price history, however many years back it goes, ends up
 stored under whichever security_key was current when that batch was
 loaded — not under any date-appropriate historical security_key.
 
-Confirmed by testing, not just inferred: adding a correct, non-orphaned
-historical dim_security row for AAPL (effective 2009-2010) did NOT
-unblock a single 2009 price lookup, because no fact_price_daily_consensus
-row was ever written against that key — proving the old filter was
-matching the wrong dimension row on principle, not just on missing data.
+Confirmed against the data: a correct historical dim_security row for
+AAPL (effective 2009-2010) has no fact_price_daily_consensus rows written
+against its key, so a date-scoped filter returns nothing for 2009.
 
-This version matches on ticker alone, across every dim_security row
+This lookup matches on ticker alone, across every dim_security row
 that ticker has ever had, and lets the INNER JOIN naturally select only
 the security_key(s) that actually have price rows. This sacrifices
 genuine point-in-time identity resolution on the price side (a ticker
 that was ever reassigned to a different company would misresolve here)
-— but that's now an honestly-stated limitation matching how the
-underlying data is actually keyed, not a theoretical one being silently
-carried by a filter that never did anything.
+— a stated limitation that matches how the underlying data is keyed.
 """
 from __future__ import annotations
 

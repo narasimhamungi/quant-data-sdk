@@ -1,15 +1,14 @@
 """
-AAPL point-in-time restatement demo — the complete proof-of-concept for
-quant-data-sdk v0/v1.
+AAPL point-in-time restatement demo: the full three-field panel across
+the 10-K/A filing boundary.
 
 period_start=2008-09-28, period_end=2009-09-26 confirmed as AAPL's
 unambiguous FY2009 annual context.
 
-adj_close now resolves for both dates (previously None) — unblocked by
-extending marketdata-lakehouse's price history back to 2009 for AAPL and
-MSFT (src/orchestrate/backfill_aapl_msft_history.py in that repo), after
-confirming the 2019 cutoff was a deliberate ingestion parameter, not a
-genuine data-availability limit.
+adj_close resolves for both dates because marketdata-lakehouse's price
+history for AAPL and MSFT reaches back to 2009
+(src/orchestrate/backfill_aapl_msft_history.py in that repo); the rest of
+its universe starts at 2019.
 
 Run:
   python scripts/aapl_pit_demo.py
@@ -67,7 +66,7 @@ def main() -> None:
             "independently and unaffected by it, exactly as expected."
         )
     else:
-        print("\nadj_close still None — price side not yet unblocked for this date range.")
+        print("\nadj_close is None — no price history loaded for this date range.")
 
 
 if __name__ == "__main__":

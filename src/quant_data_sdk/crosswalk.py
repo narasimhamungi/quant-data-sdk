@@ -17,11 +17,8 @@ QDS_SEC_USER_AGENT in .env before calling this. Cached to a local file
 for CACHE_MAX_AGE_SECONDS; this is current-mapping data, not worth
 re-fetching on every call.
 
-UNTESTED against the live SEC endpoint as of writing — the JSON
-structure below (row-number keys, {cik_str, ticker, title} values) is
-confirmed from SEC's own published documentation and multiple
-independent client implementations, not yet verified by an actual call
-from this codebase.
+The JSON structure below (row-number keys, {cik_str, ticker, title}
+values) follows SEC's published format.
 """
 from __future__ import annotations
 

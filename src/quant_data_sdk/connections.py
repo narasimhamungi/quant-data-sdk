@@ -4,14 +4,13 @@ Two independent Postgres connections.
 quant-data-sdk deliberately does NOT import marketdata-lakehouse's or
 pit-fundamentals-store's Python packages. Those are separate repos with
 their own dependency trees; this SDK treats both only as databases it
-reads from over the wire. That's a real architectural boundary, not
-laziness — importing across three separately-versioned portfolio repos
-would tightly couple them and break the "generalizable, standalone
-project" story each one is supposed to tell on its own.
+reads from over the wire. Importing across three separately versioned
+repos would couple their dependency trees; a database boundary keeps
+each one standalone.
 
 Two independent .env blocks, one per upstream Postgres instance, on the
-known 5432/5433 split (marketdata-lakehouse defaulted to 5432;
-pit-fundamentals-store moved to 5433 after they collided locally).
+5432/5433 split (marketdata-lakehouse maps host port 5432;
+pit-fundamentals-store maps 5433 so both stacks can run at once).
 override=True beats stale setx env vars, same convention as the other
 two repos.
 """
@@ -37,8 +36,8 @@ def get_marketdata_connection():
 
 
 def get_fundamentals_connection():
-    """pit-fundamentals-store — port 5433 by convention (collided with
-    marketdata-lakehouse's default 5432 during that project's build)."""
+    """pit-fundamentals-store — port 5433 by convention (marketdata-lakehouse
+    uses 5432)."""
     return psycopg2.connect(
         host=os.environ.get("QDS_FUNDAMENTALS_HOST", "localhost"),
         port=int(os.environ.get("QDS_FUNDAMENTALS_PORT", 5433)),

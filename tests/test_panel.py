@@ -1,5 +1,5 @@
 """
-v0/v1 integration tests — run against real data.
+Integration tests — run against real data in both databases.
 
 Opt-in like pit-fundamentals-store's own DB integration test
 (RUN_DB_INTEGRATION=1).
