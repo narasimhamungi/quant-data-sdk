@@ -146,7 +146,9 @@ scripts/
 ├── period_discovery_check.py         # check for discover_annual_period()
 └── ticker_generalization_check.py    # CLI: python ... TICKER [YYYY-MM-DD] — run against AMZN, JPM
 tests/
-└── test_panel.py     # opt-in integration tests (RUN_DB_INTEGRATION=1)
+├── fixtures/         # marketdata.sql, fundamentals.sql: both upstream schemas plus a few seeded rows
+├── test_fixture_db.py  # 13 tests on the correctness rules against two seeded Postgres databases (run in CI)
+└── test_panel.py     # opt-in integration tests on the live databases (RUN_DB_INTEGRATION=1)
 ```
 
 ## Known limitations
@@ -170,9 +172,10 @@ tests/
 - **AAPL/MSFT price history is a narrow, deliberate exception** — the
   rest of the ~500-ticker universe in marketdata-lakehouse starts at
   2019.
-- **No CI.** Unlike both sibling repos, there's no GitHub Actions
-  workflow and no mocked unit-test layer — `test_panel.py` is opt-in and
-  requires both live databases.
+- **CI runs on fixtures, not the full data.** GitHub Actions starts two
+  Postgres 16 services seeded from `tests/fixtures/` (the real AAPL FY2009
+  restatement plus fixture rows for each rule) and runs 13 tests on every
+  push; the live-data tests in `test_panel.py` stay opt-in.
 
 ## Setup
 
@@ -185,6 +188,9 @@ python scripts/multi_ticker_panel_demo.py
 python scripts/period_discovery_check.py
 RUN_DB_INTEGRATION=1 pytest -q
 ```
+
+The fixture tests run against two databases seeded from `tests/fixtures/`
+(`QDS_FIXTURE_DB=1`; the commands are at the top of `tests/test_fixture_db.py`).
 
 ## Related repositories
 

@@ -17,3 +17,6 @@ __pycache__/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# Personal packaging notes (CV, applications): kept out of the repository
+PORTFOLIO_PACKAGING.md

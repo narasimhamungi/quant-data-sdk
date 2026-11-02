@@ -1,0 +1,55 @@
+name: CI
+on: [push, pull_request]
+
+# The SDK's correctness rules live in SQL joins, so they are tested against two real Postgres databases
+# (the lakehouse gold layer on 5432, the fundamentals store on 5433), each seeded from a small fixture in
+# tests/fixtures/. postgres:16: the fundamentals schema's UNIQUE NULLS NOT DISTINCT needs 15 or later.
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      marketdata:
+        image: postgres:16
+        env: {POSTGRES_USER: qds, POSTGRES_PASSWORD: qds, POSTGRES_DB: marketdata}
+        ports: ["5432:5432"]
+        options: --health-cmd="pg_isready -U qds -d marketdata" --health-interval=5s --health-timeout=5s --health-retries=10
+      fundamentals:
+        image: postgres:16
+        env: {POSTGRES_USER: qds, POSTGRES_PASSWORD: qds, POSTGRES_DB: fundamentals}
+        ports: ["5433:5432"]
+        options: --health-cmd="pg_isready -U qds -d fundamentals" --health-interval=5s --health-timeout=5s --health-retries=10
+    env:
+      PGPASSWORD: qds
+      QDS_FIXTURE_DB: "1"
+      QDS_MARKETDATA_HOST: localhost
+      QDS_MARKETDATA_PORT: "5432"
+      QDS_MARKETDATA_DB: marketdata
+      QDS_MARKETDATA_USER: qds
+      QDS_MARKETDATA_PASSWORD: qds
+      QDS_FUNDAMENTALS_HOST: localhost
+      QDS_FUNDAMENTALS_PORT: "5433"
+      QDS_FUNDAMENTALS_DB: fundamentals
+      QDS_FUNDAMENTALS_USER: qds
+      QDS_FUNDAMENTALS_PASSWORD: qds
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: pip install -e ".[test]"
+      - name: Seed the two fixture databases
+        run: |
+          psql -h localhost -p 5432 -U qds -d marketdata -v ON_ERROR_STOP=1 -q -f tests/fixtures/marketdata.sql
+          psql -h localhost -p 5433 -U qds -d fundamentals -v ON_ERROR_STOP=1 -q -f tests/fixtures/fundamentals.sql
+      - name: Fixture tests (none may be skipped)
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest tests/test_fixture_db.py -v -p no:cacheprovider | tee pytest.log
+          if grep -qiE "[0-9]+ skipped" pytest.log; then echo "fixture tests were skipped"; exit 1; fi
+      - name: Whole suite (the live-data test stays opt-in)
+        run: python -m pytest -p no:cacheprovider
